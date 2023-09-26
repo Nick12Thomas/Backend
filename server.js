@@ -1,6 +1,6 @@
 require("./config/db");
 const app = require("express")();
-const port = 3000;
+const port = process.env.PORT;
 
 const UserRouter = require("./api/user");
 
@@ -12,7 +12,7 @@ app.use(bodyParser());
 app.use("/users", UserRouter);
 
 app.listen(port, () => {
-  console.log("Server started at 3000");
+  console.log("Server started");
 });
 
 

@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+//jwt token 
 const jwt = require('jsonwebtoken');
 //env variables
 require("dotenv").config();
@@ -16,14 +17,10 @@ const nodeMailer= require("nodemailer");
 //otp
 const UserOTP=require("./../models/userOTP")
 
-
-
-
-
 //signup
 const namePattern = /^[A-Za-z\s]+$/; // name validator
 
-//nodemailer
+//
 
 router.post("/signup", (req, res) => {
   let { name, email, password } = req.body;
@@ -92,7 +89,8 @@ router.post("/signup", (req, res) => {
 
 
 router.post("/signin", (req, res) => {
-  let { name,email, password } = req.body;
+  let {email, password } = req.body;
+
   // removing white spaces
   
   email = email.trim();
