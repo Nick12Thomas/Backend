@@ -15,7 +15,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
- 
 });
 
 // Create the Users model
