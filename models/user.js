@@ -15,6 +15,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  exams:{
+    type:[Schema.Types.ObjectId],
+    ref:'Exam'
+  }
+},{
+  timestamps:true,
 });
 
 // Create the Users model
