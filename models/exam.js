@@ -17,11 +17,10 @@ const ExamScheama = new mongoose.Schema({
         type:Date,
      },
      noOfQuestions:{
-        type:Number,
-        required:true,
+      type:Number,
      },
-     questions:{
-        type:[mongoose.Schema.Types.ObjectId],
+     earnedMarks:{
+      type:mongoose.Types.Decimal128,
      },
      userId:{
         type:mongoose.Schema.Types.ObjectId,

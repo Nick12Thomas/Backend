@@ -5,8 +5,7 @@ const isAthenticated = require('../middleware/isAuthenticated');
 
 
 router.post("/", isAthenticated,examController.creatExam);
-
-
-router.get("/", isAthenticated, examController.getExam);
-
+router.get("/getOpenEnded/:examId", isAthenticated, examController.getOpenEnded);
+router.get("/getMCQ/:examId",isAthenticated,examController.getMCQ);
+router.post("/endExam",isAthenticated,examController.endExam)
 module.exports = router;

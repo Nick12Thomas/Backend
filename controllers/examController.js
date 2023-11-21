@@ -11,7 +11,6 @@ const creatExam = async (req, res, next) => {
     const newExam = new Exam({
       examType: type,
       examStarted: Date.now(),
-      noOfQuestions: noOfQuestions,
       userId: userId,
       topic:topic,
     });
@@ -20,7 +19,7 @@ const creatExam = async (req, res, next) => {
     if (type == "OPEN_ENDED") {
       const questions = await generateQuestions(
         SYSTEM_PROMPT,
-        new Array(noOfQuestions).fill(
+        new Array(Number(noOfQuestions)).fill(
           `You are to generate a random hard open-ended questions about ${topic}`
         ),
         {
@@ -44,8 +43,7 @@ const creatExam = async (req, res, next) => {
         console.log(type);
         const questions = await generateQuestions(
             SYSTEM_PROMPT,
-            user_prompt,
-            new Array(noOfQuestions).fill(
+            new Array(Number(noOfQuestions)).fill(
               `You are to generate a random hard open-ended questions about ${topic}`
             ),
             {
@@ -92,9 +90,96 @@ const creatExam = async (req, res, next) => {
     });
   }
 };
-const getExam = async (req, res, next) => {};
+const getOpenEnded = async (req, res, next) => {
+  const {userId} = req.body;
+  const {examId:providedExamId} = req.params;
+  console.log(providedExamId);
+  try{
+    const exam = await Exam.findById(providedExamId);
+    if(exam.userId.toString() !== userId.toString()){
+      throw new Errow('You have not access to to exam');
+    }
+    if(exam.examType!=='OPEN_ENDED'){
+      throw new Error('Not A Valid Exam');
+    }
+    const questions = await Quesion.find({examId:providedExamId}).select('_id question answer')
+    if(questions.length==0){
+      throw new Error("Unable to get questions");
+    }
+    const examDetails ={
+      ...exam._doc,
+      questions:[
+        ...questions
+      ]
+    }
+    res.status(201).json({
+      messgae:"Found",
+      exam:examDetails
+    })
+  }catch(e){
+    console.log(e)
+    res.status(502).json({
+      messgae:e.messgae
+    })
+  }
+};
+
+const getMCQ = async (req, res, next) => {
+  const {userId} = req.body;
+  const {examId:providedExamId} = req.params;
+  console.log(providedExamId);
+  try{
+    const exam = await Exam.findById(providedExamId);
+    if(exam.userId.toString() !== userId.toString()){
+      throw new Errow('You have not access to to exam');
+    }
+    if(exam.examType!=='MCQ'){
+      throw new Error('Not A Valid Exam');
+    }
+    const questions = await Quesion.find({examId:providedExamId}).select('_id question options')
+    if(questions.length==0){
+      throw new Error("Unable to get questions");
+    }
+    const examDetails ={
+      ...exam._doc,
+      questions:[
+        ...questions
+      ]
+    }
+    res.status(201).json({
+      messgae:"Found",
+      exam:examDetails
+    })
+  }catch(e){
+    console.log(e)
+    res.status(502).json({
+      messgae:e.messgae
+    })
+  }
+};
+
+const endExam = async (req,res,next) => {
+  const {examId,earnedMarks} = req.body;
+  try{
+    const exam = await Exam.findById(examId);
+    if(!exam){
+      throw new Error("Not Found the exam");
+    }
+    await Exam.findByIdAndUpdate(examId,{
+      examEnd:new Date(),
+      earnedMarks:earnedMarks
+    })
+    res.status(201).json({
+      messgae:"Exam has been ended"
+    })
+  }catch(e){
+    
+  }
+}
 
 module.exports = {
-  getExam,
+  getOpenEnded,
   creatExam,
+  getMCQ,
+  endExam
 };

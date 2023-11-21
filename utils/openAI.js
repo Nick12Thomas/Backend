@@ -166,7 +166,7 @@ async function generateQuestions(
       error_msg = `\n\nResult: ${res}\n\nError message: ${e}`;
       console.log("An exception occurred:", e);
       console.log("Current invalid json format ", res);
-      return res;
+      return JSON.parser(res);
     }
   }
 

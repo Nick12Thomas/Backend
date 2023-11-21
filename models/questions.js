@@ -31,6 +31,9 @@ const QuestionSchema = new mongoose.Schema({
         type:mongoose.Types.ObjectId,
         ref:"Exam"
     },
+    userAnswer:{
+        type:String
+    }
 });
 
 // Create the Users model
