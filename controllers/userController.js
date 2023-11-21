@@ -42,7 +42,7 @@ const signup  = async (req,res,next)=>{
               newUser.save().then((result) => {   
                 console.log(result);         
                 const {password,...userData} = result._doc;
-                const accessToken= jwt.sign(email,process.env.ACCESS_TOKEN);
+                const accessToken= jwt.sign({_id:userData._id},process.env.ACCESS_TOKEN);
                 res.status(201).json({
                   status: "Success",
                   message: "Registered Successfully",
@@ -77,7 +77,7 @@ const signin = (req, res,next) => {
     } else {
       User.find({ email }).then((user) => {
         if (user) {
-          const accessToken= jwt.sign(email,process.env.ACCESS_TOKEN);
+          const accessToken= jwt.sign( {_id:user[0]._doc._id},process.env.ACCESS_TOKEN);
          
           //user existed
           const {password:hashPass,...userData} = user[0]._doc;

@@ -6,20 +6,26 @@ const ExamScheama = new mongoose.Schema({
         enum:['MCQ','OPEN_ENDED'],
         required:true, 
      },
+     topic:{
+        type:String,
+        required:true,
+     },
      examStarted:{
-         type:Date,
-         required:true,
+        type:Date,
      },
      examEnd:{
-         type:Date,
-         required:true,
+        type:Date,
+     },
+     noOfQuestions:{
+        type:Number,
+        required:true,
      },
      questions:{
         type:[mongoose.Schema.Types.ObjectId],
      },
      userId:{
-         type:mongoose.Schema.Types.ObjectId,
-         ref:'User'
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User'
      }
 },{
     timestamps:true
