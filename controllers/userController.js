@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const {NAME_PATTERN , EMAIL_PATTERN } = require("../utils/utils");
+const Exam = require('../models/exam');
 const signup  = async (req,res,next)=>{
     let { name, email, password } = req.body;
     name = name.trim();
@@ -111,4 +112,37 @@ const signin = (req, res,next) => {
     }
   }
 
-  module.exports ={signin,signup};
+  const getUserInfo = async (req,res,next) => {
+    const {userId}  = req.body;
+    try{
+      const user =  await User.findById(userId);
+      if(!user){
+        throw new Error();
+      }
+      const exams = await Exam.find({userId});
+      console.log(exams);
+      let totalMarks=0;
+      let earnedMarks=0;
+      for(let i=0;i<exams.length;i++){
+        totalMarks+=exams[i].totalMarks;
+        earnedMarks+=parseFloat(exams[i].earnedMarks);
+      }
+      console.log(totalMarks,earnedMarks);
+      let percentageMarks = Math.ceil((earnedMarks/totalMarks)*100)
+      res.status(201).json({
+        ...user._doc,
+        percentageMarks,
+        totalMarks,
+        earnedMarks,
+        exams:[
+          ...exams
+        ]
+      })
+    }catch(e){
+      console.log(e);
+      res.status(401).json({
+        message:"Unabale to Get The Informations"
+      })
+    }
+  }
+  module.exports ={signin,signup,getUserInfo};
