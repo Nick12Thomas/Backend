@@ -13,6 +13,8 @@ const creatExam = async (req, res, next) => {
       examStarted: Date.now(),
       userId: userId,
       topic:topic,
+      noOfQuestions:noOfQuestions,
+      totalMarks:type==="MCQ" ? noOfQuestions*5 : 100
     });
     const exam = await newExam.save();
     // generate questions using AI - OpenAI
@@ -177,9 +179,29 @@ const endExam = async (req,res,next) => {
   }
 }
 
+const getAllExam = async (req,res,next) => {
+   const {userId} = req.body;
+   try{
+    console.log("GET ALL EXAMS");
+    const exams = await Exam.find({userId}).select('_id topic examType earnedMarks totalMarks').sort({examStarted:-1});
+    res.status(201).json({
+      messgae:"Succesfullly fetched",
+      exams:[
+        ...exams
+      ]
+    })
+   }catch(e){
+    console.log(e);
+    res.status(501).status({
+      messgae:"Unable to get your exams data"
+    })
+   }
+}
+
 module.exports = {
   getOpenEnded,
   creatExam,
   getMCQ,
-  endExam
+  endExam,
+  getAllExam
 };

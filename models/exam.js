@@ -22,6 +22,9 @@ const ExamScheama = new mongoose.Schema({
      earnedMarks:{
       type:mongoose.Types.Decimal128,
      },
+     totalMarks:{
+      type:Number,
+     },
      userId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'User'
