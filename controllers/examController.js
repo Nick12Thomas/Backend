@@ -8,15 +8,7 @@ const creatExam = async (req, res, next) => {
   console.log(userId);
   try {
     // Save Exam
-    const newExam = new Exam({
-      examType: type,
-      examStarted: Date.now(),
-      userId: userId,
-      topic: topic,
-      noOfQuestions: noOfQuestions,
-      totalMarks: type === "MCQ" ? noOfQuestions * 5 : 100,
-    });
-    const exam = await newExam.save();
+    let exam = null
     // generate questions using AI - OpenAI
     if (type == "OPEN_ENDED") {
       const questions = await generateQuestions(
@@ -29,6 +21,15 @@ const creatExam = async (req, res, next) => {
           answer: "answer with max length of 15 words",
         }
       );
+      const newExam = new Exam({
+        examType: type,
+        examStarted: Date.now(),
+        userId: userId,
+        topic: topic,
+        noOfQuestions: noOfQuestions,
+        totalMarks: type === "MCQ" ? noOfQuestions * 5 : 100,
+      });
+      exam = await newExam.save();
       // console.log(questions);
       const manyData = questions.map((question) => {
         // mix up the options lol
@@ -56,6 +57,15 @@ const creatExam = async (req, res, next) => {
           option3: "option3 with max length of 15 words",
         }
       );
+      const newExam = new Exam({
+        examType: type,
+        examStarted: Date.now(),
+        userId: userId,
+        topic: topic,
+        noOfQuestions: noOfQuestions,
+        totalMarks: type === "MCQ" ? noOfQuestions * 5 : 100,
+      });
+      exam = await newExam.save();
       console.log(questions);
       const manyData = questions.map((question) => {
         // mix up the options lol
@@ -76,7 +86,9 @@ const creatExam = async (req, res, next) => {
       await Quesion.insertMany(manyData);
     }
 
-    // save question
+    if(!exam){
+      throw new Error("Unable to create exam");
+    }
 
     // Sent exam data
     res.status(201).json({
@@ -182,7 +194,11 @@ const endExam = async (req, res, next) => {
     res.status(201).json({
       messgae: "Exam has been ended",
     });
-  } catch (e) {}
+  } catch (e) {
+    res.status(401).json({
+      messgae:"Unbale to end the exam"
+    })
+  }
 };
 
 const getAllExam = async (req, res, next) => {
