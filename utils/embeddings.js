@@ -1,4 +1,4 @@
-const { OpenAIApi, Configuration } = require("openai-edge");
+const { OpenAIApi, Configuration } = require("openai");
 
 const config = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -12,9 +12,11 @@ async function getEmbeddings(text) {
       model: "text-embedding-ada-002",
       input: text.replace(/\n/g, " "),
     });
-    const result = await response.json();
-    console.log(result);
-    return result.data[0].embedding;
+    console.log(response.data.data);
+    // const result = await response.json();
+    // console.log(result);
+    // return result.data[0].embedding;
+    return response.data.data[0].embedding;
   } catch (error) {
     console.log("error calling openai embeddings api", error);
     throw error;

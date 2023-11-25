@@ -4,7 +4,7 @@ const messegesController = require("../controllers/messegesController");
 const isAthenticated = require('../middleware/isAuthenticated');
 
 
-router.get("/",isAthenticated,messegesController.getMessges);
+router.get("/:chatId",isAthenticated,messegesController.getMessges);
 
 
 module.exports = router;

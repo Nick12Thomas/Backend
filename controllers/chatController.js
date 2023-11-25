@@ -1,5 +1,5 @@
 const { uploadToS3, getS3Url } = require("../utils/s3");
-const { OpenAIApi, Configuration } = require("openai-edge");
+const { OpenAIApi, Configuration } = require("openai");
 const { loadS3IntoPinecone } = require("../utils/pinecone");
 const { getContext } = require("../utils/context");
 
@@ -42,8 +42,10 @@ const openai = new OpenAIApi(config);
 const chat = async (req, res, next) => {
   try {
     const { messages, chatId } = req.body;
+    console.log(messages,chatId)
     const _chats = await Chat.findById(chatId);
-    if (_chats.length != 1) {
+    console.log(_chats)
+    if (!_chats) {
       throw new Error("Hello");
     }
     const fileKey = _chats.fileKey;
@@ -74,6 +76,10 @@ const chat = async (req, res, next) => {
         ...messages.filter((message) => message.role === "user"),
       ],
     });
+    
+    console.log(response.data.choices[0].message);
+    let result = response.data.choices[0].message?.content?.replace(/'/g, '"') ?? "";
+    console.log(result);
     const useMessage = new Messege({
         chatId:_chats._id,
         role:"user",
@@ -82,12 +88,18 @@ const chat = async (req, res, next) => {
     await useMessage.save();
     const systemMessege = new Messege({
         chatId:_chats._id,
-        role:"user",
-        content:response.data.choices[0].message
+        role:"system",
+        content:result
     })
     await systemMessege.save();
+    res.status(201).json({
+        message:result
+    })
   } catch (e) {
     console.log(e);
+    res.status(502).json({
+        message:"Nhi hua"
+    })
   }
 };
 
